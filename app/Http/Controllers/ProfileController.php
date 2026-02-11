@@ -24,6 +24,8 @@ class ProfileController extends Controller
         ]);
     }
 
+    /** We havd */
+
     /**
      * Update the user's profile information.
      */
@@ -36,6 +38,7 @@ class ProfileController extends Controller
         }
 
         $request->user()->save();
+
 
         return Redirect::route('profile.edit');
     }
