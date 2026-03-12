@@ -3,6 +3,8 @@ export interface User {
     name: string;
     email: string;
     email_verified_at?: string;
+    role: "admin" | "doctor" | "nurse" | "registration" | "pharmacist";
+    phone?: string;
 }
 
 export type PageProps<
@@ -10,5 +12,16 @@ export type PageProps<
 > = T & {
     auth: {
         user: User;
+    };
+    flash: {
+        success?: string;
+        error?: string;
+    };
+    ziggy: {
+        location: string;
+        url: string;
+        port: number | null;
+        defaults: Record<string, unknown>;
+        routes: Record<string, unknown>;
     };
 };

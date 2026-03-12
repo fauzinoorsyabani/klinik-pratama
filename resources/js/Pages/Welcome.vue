@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from "@inertiajs/vue3";
-import MovingGridBackground from '@/Components/MovingGridBackground.vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 
 defineProps<{
     canLogin?: boolean;
@@ -8,330 +8,137 @@ defineProps<{
     laravelVersion: string;
     phpVersion: string;
 }>();
+
+const mobileMenuOpen = ref(false);
+const scrolled = ref(false);
+
+const handleScroll = () => {
+    scrolled.value = window.scrollY > 20;
+};
+
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll);
+});
+
+const services = [
+    {
+        title: 'Layanan Dokter Umum',
+        description: 'Konsultasi medis umum dan penanganan penyakit ringan hingga menengah oleh dokter berpengalaman.',
+        icon: 'M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.324-1.414-3.414l5-5A2 2 0 0010 8.586V4h8z',
+    },
+    {
+        title: 'Layanan BPJS Kesehatan',
+        description: 'Melayani pasien peserta BPJS Kesehatan dengan fasilitas dan pelayanan terbaik sesuai standar.',
+        icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+    },
+    {
+        title: 'Layanan Tindakan',
+        description: 'Penanganan medis yang memerlukan tindakan cepat, tepat, dan aman oleh tenaga profesional.',
+        icon: 'M13 10V3L4 14h7v7l9-11h-7z',
+    },
+    {
+        title: 'Layanan Khitan',
+        description: 'Melayani khitan modern dengan metode aman, cepat sembuh, dan minim rasa sakit.',
+        icon: 'M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5',
+    },
+    {
+        title: 'Layanan Home Care',
+        description: 'Perawatan medis profesional langsung di rumah Anda, memastikan kenyamanan dan pemulihan maksimal.',
+        icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
+    },
+];
+
+const doctors = [
+    {
+        name: 'dr. Budi Santoso',
+        role: 'Dokter Umum',
+        image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=400',
+        schedule: 'Senin - Rabu (06.00 - 11.00)',
+    },
+    {
+        name: 'dr. Ahmad Fauzi',
+        role: 'Dokter Umum',
+        image: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=400',
+        schedule: 'Kamis - Sabtu (16.00 - 21.00)',
+    },
+    {
+        name: 'drg. Siti Aminah',
+        role: 'Dokter Gigi',
+        image: 'https://images.unsplash.com/photo-1594824436998-058a231161a0?auto=format&fit=crop&q=80&w=400',
+        schedule: 'Senin, Rabu, Jumat',
+    },
+    {
+        name: 'drg. Rizky Permata',
+        role: 'Dokter Gigi',
+        image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=400',
+        schedule: 'Selasa, Kamis, Sabtu',
+    }
+];
 </script>
 
 <template>
-    <Head title="Klinik Pratama Kamulyan" />
-    <div
-        class="min-h-screen bg-gray-50 text-gray-800 font-sans selection:bg-primary-500 selection:text-white dark:bg-gray-900 dark:text-gray-100"
-    >
+    <Head title="Beranda" />
+
+    <div class="min-h-screen bg-slate-50 font-sans selection:bg-primary-500 selection:text-white">
         <!-- Navigation -->
         <nav
-            class="fixed w-full z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 transition-all duration-300"
+            :class="[
+                'fixed w-full z-50 transition-all duration-300 border-b',
+                scrolled ? 'bg-white/95 backdrop-blur-md border-slate-200 py-3 shadow-sm' : 'bg-white border-transparent py-4'
+            ]"
         >
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-20 items-center">
-                    <div class="flex-shrink-0 flex items-center gap-2">
-                        <div
-                            class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white font-bold text-lg shadow-lg"
-                        >
-                            K
-                        </div>
-                        <span
-                            class="text-2xl font-bold bg-gradient-to-r from-primary-600 to-teal-500 bg-clip-text text-transparent"
-                        >
-                            Klinik Kamulyan
-                        </span>
+                <div class="flex justify-between items-center">
+                    <!-- Logo -->
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded bg-primary-600 flex items-center justify-center text-white font-bold text-xl">K</div>
+                        <span class="text-xl font-bold text-secondary-900 tracking-tight">Klinik <span class="text-primary-600">Kamulyan</span></span>
                     </div>
 
-                    <div class="hidden md:flex space-x-8">
-                        <a
-                            href="#services"
-                            class="text-gray-600 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 transition font-medium"
-                            >Layanan</a
-                        >
-                        <a
-                            href="#doctors"
-                            class="text-gray-600 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 transition font-medium"
-                            >Dokter</a
-                        >
-                        <a
-                            href="#contact"
-                            class="text-gray-600 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400 transition font-medium"
-                            >Kontak</a
-                        >
+                    <!-- Desktop Menu -->
+                    <div class="hidden md:flex items-center space-x-8">
+                        <a href="#home" class="text-sm font-medium text-secondary-600 hover:text-primary-600 transition">Beranda</a>
+                        <a href="#about" class="text-sm font-medium text-secondary-600 hover:text-primary-600 transition">Tentang Kami</a>
+                        <a href="#services" class="text-sm font-medium text-secondary-600 hover:text-primary-600 transition">Layanan</a>
+                        <a href="#schedule" class="text-sm font-medium text-secondary-600 hover:text-primary-600 transition">Jadwal Klinik</a>
+                        <a href="#contact" class="text-sm font-medium text-secondary-600 hover:text-primary-600 transition">Kontak</a>
                     </div>
 
-                    <div class="flex items-center space-x-4">
+                    <!-- Actions -->
+                    <div class="hidden md:flex items-center space-x-4">
                         <template v-if="canLogin">
                             <Link
                                 v-if="$page.props.auth.user"
                                 :href="route('dashboard')"
-                                class="text-gray-900 hover:text-primary-600 font-medium dark:text-white"
-                                >Dashboard</Link
+                                class="text-sm font-medium text-secondary-600 hover:text-primary-600 transition"
                             >
+                                Dashboard
+                            </Link>
                             <template v-else>
                                 <Link
                                     :href="route('login')"
-                                    class="text-gray-900 hover:text-primary-600 font-medium px-4 py-2 dark:text-white"
-                                    >Log in</Link
+                                    class="text-sm font-medium text-secondary-600 hover:text-primary-600 transition"
                                 >
+                                    Login Petugas
+                                </Link>
                                 <Link
                                     v-if="canRegister"
                                     :href="route('register')"
-                                    class="bg-primary-600 text-white px-5 py-2.5 rounded-full hover:bg-primary-700 transition shadow-lg shadow-primary-500/30 font-medium text-sm"
-                                    >Daftar Online</Link
+                                    class="px-5 py-2.5 rounded bg-primary-600 text-white text-sm font-bold hover:bg-primary-700 transition focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                                 >
+                                    Daftar Online
+                                </Link>
                             </template>
                         </template>
                     </div>
-                </div>
-            </div>
-        </nav>
 
-        <!-- Hero Section -->
-        <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-            <div class="absolute inset-0 z-0 overflow-hidden">
-                <div
-                    class="absolute inset-0 bg-gradient-to-br from-primary-50/50 to-white dark:from-gray-950 dark:to-gray-900"
-                ></div>
-                <!-- Moving Grid Background -->
-                <MovingGridBackground />
-                
-                <div
-                    class="absolute right-0 top-0 -mt-20 -mr-20 w-96 h-96 bg-primary-200/20 rounded-full blur-3xl animate-pulse"
-                ></div>
-                <div
-                    class="absolute left-0 bottom-0 -mb-20 -ml-20 w-80 h-80 bg-teal-200/20 rounded-full blur-3xl"
-                ></div>
-            </div>
-
-            <div
-                class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
-            >
-                <div
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-50 text-primary-700 text-sm font-medium mb-6 border border-primary-100 dark:bg-primary-900/30 dark:text-primary-300 dark:border-primary-800"
-                >
-                    <span
-                        class="flex h-2 w-2 rounded-full bg-primary-500"
-                    ></span>
-                    Melayani dengan Sepenuh Hati
-                </div>
-                <h1
-                    class="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-tight text-gray-900 dark:text-white"
-                >
-                    Kesehatan Anda,<br />
-                    <span
-                        class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-teal-500"
-                        >Prioritas Utama Kami</span
-                    >
-                </h1>
-                <p
-                    class="text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed"
-                >
-                    Layanan kesehatan modern dengan pendekatan personal. Dokter
-                    berpengalaman dan fasilitas lengkap untuk kenyamanan Anda
-                    dan keluarga.
-                </p>
-                <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <Link
-                        v-if="canRegister"
-                        :href="route('register')"
-                        class="px-8 py-4 bg-primary-600 text-white rounded-full text-lg font-semibold hover:bg-primary-700 transition shadow-xl shadow-primary-500/20 hover:shadow-primary-500/30 transform hover:-translate-y-1"
-                    >
-                        Daftar Berobat
-                    </Link>
-                    <a
-                        href="#services"
-                        class="px-8 py-4 bg-white text-gray-700 border border-gray-200 rounded-full text-lg font-semibold hover:bg-gray-50 transition dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 hover:shadow-lg"
-                    >
-                        Lihat Layanan
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- Services Section -->
-        <section id="services" class="py-24 bg-white dark:bg-gray-900">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16">
-                    <h2
-                        class="text-base text-primary-600 font-semibold tracking-wide uppercase"
-                    >
-                        Layanan Kami
-                    </h2>
-                    <p
-                        class="mt-2 text-3xl leading-8 font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl"
-                    >
-                        Solusi Kesehatan Terpadu
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Service 1 -->
-                    <div
-                        class="p-8 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:shadow-xl transition duration-300 border border-transparent hover:border-primary-100 dark:hover:border-primary-900 group relative overflow-hidden"
-                    >
-                        <div
-                            class="absolute inset-0 bg-gradient-to-br from-primary-50/50 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none"
-                        ></div>
-                        <div
-                            class="w-14 h-14 bg-white dark:bg-gray-700 text-primary-600 rounded-2xl flex items-center justify-center mb-6 text-2xl group-hover:bg-primary-600 group-hover:text-white transition shadow-sm group-hover:shadow-md z-10 relative"
-                        >
-                            🩺
-                        </div>
-                        <h3
-                            class="text-xl font-bold text-gray-900 dark:text-white mb-3 relative z-10"
-                        >
-                            Poli Umum
-                        </h3>
-                        <p
-                            class="text-gray-600 dark:text-gray-400 relative z-10"
-                        >
-                            Pemeriksaan kesehatan menyeluruh oleh dokter umum
-                            berpengalaman untuk segala keluhan penyakit ringan
-                            hingga konsultasi kesehatan.
-                        </p>
-                    </div>
-
-                    <!-- Service 2 -->
-                    <div
-                        class="p-8 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:shadow-xl transition duration-300 border border-transparent hover:border-blue-100 dark:hover:border-blue-900 group relative overflow-hidden"
-                    >
-                        <div
-                            class="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none"
-                        ></div>
-                        <div
-                            class="w-14 h-14 bg-white dark:bg-gray-700 text-blue-600 rounded-2xl flex items-center justify-center mb-6 text-2xl group-hover:bg-blue-600 group-hover:text-white transition shadow-sm group-hover:shadow-md z-10 relative"
-                        >
-                            🦷
-                        </div>
-                        <h3
-                            class="text-xl font-bold text-gray-900 dark:text-white mb-3 relative z-10"
-                        >
-                            Poli Gigi
-                        </h3>
-                        <p
-                            class="text-gray-600 dark:text-gray-400 relative z-10"
-                        >
-                            Perawatan kesehatan gigi dan mulut profesional.
-                            Mulai dari pembersihan karang gigi (scaling),
-                            tambal, cabut, hingga perawatan estetik.
-                        </p>
-                    </div>
-
-                    <!-- Service 3 -->
-                    <div
-                        class="p-8 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:shadow-xl transition duration-300 border border-transparent hover:border-green-100 dark:hover:border-green-900 group relative overflow-hidden"
-                    >
-                        <div
-                            class="absolute inset-0 bg-gradient-to-br from-green-50/50 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none"
-                        ></div>
-                        <div
-                            class="w-14 h-14 bg-white dark:bg-gray-700 text-green-600 rounded-2xl flex items-center justify-center mb-6 text-2xl group-hover:bg-green-600 group-hover:text-white transition shadow-sm group-hover:shadow-md z-10 relative"
-                        >
-                            💊
-                        </div>
-                        <h3
-                            class="text-xl font-bold text-gray-900 dark:text-white mb-3 relative z-10"
-                        >
-                            Farmasi
-                        </h3>
-                        <p
-                            class="text-gray-600 dark:text-gray-400 relative z-10"
-                        >
-                            Layanan obat lengkap, terjamin keasliannya dan harga
-                            terjangkau. Dikelola oleh apoteker profesional yang
-                            siap memberikan konsultasi obat.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Stats Section (Optional) -->
-        <section class="py-20 bg-primary-600 text-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                    <div>
-                        <div class="text-4xl font-bold mb-2">10+</div>
-                        <div class="text-primary-200">Dokter Spesialis</div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold mb-2">5000+</div>
-                        <div class="text-primary-200">Pasien Terlayani</div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold mb-2">24/7</div>
-                        <div class="text-primary-200">
-                            Layanan Gawar Darurat
-                        </div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold mb-2">5 Tahun</div>
-                        <div class="text-primary-200">Pengalaman</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer
-            class="bg-gray-50 dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 py-12"
-        >
-            <div
-                class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-8"
-            >
-                <div class="col-span-1 md:col-span-2">
-                    <span
-                        class="text-2xl font-bold bg-gradient-to-r from-primary-600 to-teal-500 bg-clip-text text-transparent mb-4 block"
-                    >
-                        Klinik Kamulyan
-                    </span>
-                    <p class="text-gray-500 dark:text-gray-400 max-w-sm">
-                        Menyediakan layanan kesehatan berkualitas tinggi dengan
-                        harga yang terjangkau bagi masyarakat.
-                    </p>
-                </div>
-                <div>
-                    <h4 class="font-bold text-gray-900 dark:text-white mb-4">
-                        Layanan
-                    </h4>
-                    <ul class="space-y-2 text-gray-500 dark:text-gray-400">
-                        <li>
-                            <a href="#" class="hover:text-primary-600"
-                                >Poli Umum</a
-                            >
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-primary-600"
-                                >Poli Gigi</a
-                            >
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-primary-600"
-                                >Checkup Medis</a
-                            >
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-primary-600"
-                                >Farmasi</a
-                            >
-                        </li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-gray-900 dark:text-white mb-4">
-                        Kontak
-                    </h4>
-                    <ul class="space-y-2 text-gray-500 dark:text-gray-400">
-                        <li>Jl. Sehat Sejahtera No. 123</li>
-                        <li>(021) 555-0123</li>
-                        <li>info@klinikkamulyan.com</li>
-                    </ul>
-                </div>
-            </div>
-            <div
-                class="max-w-7xl mx-auto px-4 text-center border-t border-gray-200 dark:border-gray-800 pt-8"
-            >
-                <p class="text-gray-500 dark:text-gray-400">
-                    © 2024 Klinik Pratama Kamulyan. All rights reserved.
-                </p>
-            </div>
-        </footer>
-    </div>
-</template>
-
-<style scoped>
-/* Optional: specific CSS if Tailwind isn't enough */
-</style>
+                    <!-- Mobile menu button -->
+                    <div class="md:hidden flex items-center">
+                        <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-secondary-600 hover:text-primary-600 p-2">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path v-if="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                                <path v-else stroke-linecap="
