@@ -15,4 +15,9 @@ class Medicine extends Model
     {
         return $this->hasMany(PrescriptionItem::class);
     }
+
+    public function batches()
+    {
+        return $this->hasMany(MedicineBatch::class);
+    }
 }

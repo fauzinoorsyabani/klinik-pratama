@@ -113,6 +113,14 @@ class MedicineController extends Controller
             ]);
 
         $totalDispensed = $medicine->prescriptionItems()->sum('quantity');
+        
+        $batches = $medicine->batches()->latest()->get()->map(fn($b) => [
+            'id' => $b->id,
+            'batch_number' => $b->batch_number,
+            'stock' => $b->stock,
+            'expiration_date' => $b->expiration_date,
+            'received_date' => $b->received_date,
+        ]);
 
         return Inertia::render('Pharmacy/Medicines/Show', [
             'medicine' => [
@@ -127,6 +135,7 @@ class MedicineController extends Controller
                 'total_dispensed'=> $totalDispensed,
                 'created_at'     => $medicine->created_at->format('d M Y'),
                 'updated_at'     => $medicine->updated_at->format('d M Y'),
+                'batches'        => $batches,
             ],
             'usageHistory' => $usageHistory,
         ]);
@@ -192,16 +201,11 @@ class MedicineController extends Controller
             ->with('success', "Obat \"{$name}\" berhasil dihapus.");
     }
 
-    /**
-     * Adjust medicine stock (add or subtract).
-     *
-     * Used for manual stock-in / stock correction by pharmacist or admin.
-     */
     public function adjustStock(Request $request, Medicine $medicine): RedirectResponse
     {
         $validated = $request->validate([
-            'adjustment' => ['required', 'integer', 'not_in:0'],
-            'reason'     => ['required', 'string', 'max:500', Rule::in([
+            'adjustment'      => ['required', 'integer', 'not_in:0'],
+            'reason'          => ['required', 'string', 'max:500', Rule::in([
                 'restock',
                 'correction',
                 'expired',
@@ -209,7 +213,10 @@ class MedicineController extends Controller
                 'return',
                 'other',
             ])],
-            'notes' => ['nullable', 'string', 'max:500'],
+            'notes'           => ['nullable', 'string', 'max:500'],
+            // Field khusus untuk batch
+            'batch_number'    => ['nullable', 'string', 'max:100', 'required_if:reason,restock'],
+            'expiration_date' => ['nullable', 'date', 'required_if:reason,restock'],
         ]);
 
         $newStock = $medicine->stock + $validated['adjustment'];
@@ -220,6 +227,17 @@ class MedicineController extends Controller
             ]);
         }
 
+        // Jika alasannya restock dan penambahan positif, simpan sebagai batch baru
+        if ($validated['reason'] === 'restock' && $validated['adjustment'] > 0) {
+            $medicine->batches()->create([
+                'batch_number'    => $validated['batch_number'],
+                'stock'           => $validated['adjustment'],
+                'expiration_date' => $validated['expiration_date'],
+                'received_date'   => now(),
+            ]);
+        }
+
+        // Selalu perbarui stok total (aggregate) untuk kompatibilitas
         $medicine->update(['stock' => $newStock]);
 
         $direction = $validated['adjustment'] > 0 ? 'ditambah' : 'dikurangi';
